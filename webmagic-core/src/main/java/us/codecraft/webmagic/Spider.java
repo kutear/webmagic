@@ -303,7 +303,8 @@ public class Spider implements Runnable, Task {
     public void run() {
         checkRunningStat();
         initComponent();
-        logger.info("Spider {} started!",getUUID());
+        logger.info("Spider {} started!", getUUID());
+        dispatchListener(null, (listener, request) -> listener.onStart(getUUID()));
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Request request = scheduler.poll(this);
             if (request == null) {
@@ -335,21 +336,27 @@ public class Spider implements Runnable, Task {
         if (destroyWhenExit) {
             close();
         }
+        dispatchListener(null, (listener, request) -> listener.onFinish(getUUID()));
+
         logger.info("Spider {} closed! {} pages downloaded.", getUUID(), pageCount.get());
     }
 
     protected void onError(Request request) {
-        if (CollectionUtils.isNotEmpty(spiderListeners)) {
-            for (SpiderListener spiderListener : spiderListeners) {
-                spiderListener.onError(request);
-            }
-        }
+        dispatchListener(request, SpiderListener::onError);
     }
 
     protected void onSuccess(Request request) {
+        dispatchListener(request, SpiderListener::onSuccess);
+    }
+
+    interface ActionDispatcher {
+        void onAction(SpiderListener listener, Request request);
+    }
+
+    private void dispatchListener(Request request, ActionDispatcher dispatcher) {
         if (CollectionUtils.isNotEmpty(spiderListeners)) {
             for (SpiderListener spiderListener : spiderListeners) {
-                spiderListener.onSuccess(request);
+                dispatcher.onAction(spiderListener, request);
             }
         }
     }
@@ -402,12 +409,12 @@ public class Spider implements Runnable, Task {
 
     private void processRequest(Request request) {
         Page page;
-        if (null != request.getDownloader()){
-            page = request.getDownloader().download(request,this);
-        }else {
+        if (null != request.getDownloader()) {
+            page = request.getDownloader().download(request, this);
+        } else {
             page = downloader.download(request, this);
         }
-        if (page.isDownloadSuccess()){
+        if (page.isDownloadSuccess()) {
             onDownloadSuccess(request, page);
         } else {
             onDownloaderFail(request);
@@ -415,7 +422,7 @@ public class Spider implements Runnable, Task {
     }
 
     private void onDownloadSuccess(Request request, Page page) {
-        if (site.getAcceptStatCode().contains(page.getStatusCode())){
+        if (site.getAcceptStatCode().contains(page.getStatusCode())) {
             pageProcessor.process(page);
             extractAndAddRequests(page, spawnUrl);
             if (!page.getResultItems().isSkip()) {
@@ -427,7 +434,6 @@ public class Spider implements Runnable, Task {
             logger.info("page status code error, page {} , code: {}", request.getUrl(), page.getStatusCode());
         }
         sleep(site.getSleepTime());
-        return;
     }
 
     private void onDownloaderFail(Request request) {
@@ -457,7 +463,7 @@ public class Spider implements Runnable, Task {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted when sleep",e);
+            logger.error("Thread interrupted when sleep", e);
         }
     }
 
@@ -506,13 +512,13 @@ public class Spider implements Runnable, Task {
      * Download urls synchronizing.
      *
      * @param urls urls
-     * @param <T> type of process result
+     * @param <T>  type of process result
      * @return list downloaded
      */
     public <T> List<T> getAll(Collection<String> urls) {
         destroyWhenExit = false;
         spawnUrl = false;
-        if (startRequests!=null){
+        if (startRequests != null) {
             startRequests.clear();
         }
         for (Request request : UrlUtils.convertToRequests(urls)) {
@@ -609,7 +615,7 @@ public class Spider implements Runnable, Task {
      * start with more than one threads
      *
      * @param executorService executorService to run the spider
-     * @param threadNum threadNum
+     * @param threadNum       threadNum
      * @return this
      */
     public Spider thread(ExecutorService executorService, int threadNum) {

@@ -85,6 +85,11 @@ public class SpiderMonitor {
         private List<String> errorUrls = Collections.synchronizedList(new ArrayList<String>());
 
         @Override
+        public void onStart(String uuid) {
+
+        }
+
+        @Override
         public void onSuccess(Request request) {
             successCount.incrementAndGet();
         }
@@ -93,6 +98,11 @@ public class SpiderMonitor {
         public void onError(Request request) {
             errorUrls.add(request.getUrl());
             errorCount.incrementAndGet();
+        }
+
+        @Override
+        public void onFinish(String uuid) {
+
         }
 
         public AtomicInteger getSuccessCount() {
