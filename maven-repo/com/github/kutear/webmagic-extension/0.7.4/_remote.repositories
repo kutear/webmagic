@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Mar 10 02:31:46 CST 2021
+webmagic-extension-0.7.4.jar>=
+webmagic-extension-0.7.4-javadoc.jar>=
+webmagic-extension-0.7.4-sources.jar>=
+webmagic-extension-0.7.4.pom>=

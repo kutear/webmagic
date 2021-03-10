@@ -11,6 +11,7 @@ import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.pipeline.ResultItemsCollectorPipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.processor.PageProcessorExt;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
 import us.codecraft.webmagic.scheduler.Scheduler;
 import us.codecraft.webmagic.thread.CountableThreadPool;
@@ -108,6 +109,8 @@ public class Spider implements Runnable, Task {
 
     private int emptySleepTime = 30000;
 
+    private String name;
+
     /**
      * create a spider with pageProcessor.
      *
@@ -126,7 +129,19 @@ public class Spider implements Runnable, Task {
      */
     public Spider(PageProcessor pageProcessor) {
         this.pageProcessor = pageProcessor;
+        if (pageProcessor instanceof PageProcessorExt) {
+            ((PageProcessorExt) pageProcessor).injectSpider(this);
+        }
         this.site = pageProcessor.getSite();
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
@@ -304,7 +319,7 @@ public class Spider implements Runnable, Task {
         checkRunningStat();
         initComponent();
         logger.info("Spider {} started!", getUUID());
-        dispatchListener(null, (listener, request) -> listener.onStart(getUUID()));
+        dispatchListener(null, (listener, request) -> listener.onStart(this));
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
             final Request request = scheduler.poll(this);
             if (request == null) {
@@ -321,7 +336,7 @@ public class Spider implements Runnable, Task {
                             processRequest(request);
                             onSuccess(request);
                         } catch (Exception e) {
-                            onError(request);
+                            onError(request, e);
                             logger.error("process request " + request + " error", e);
                         } finally {
                             pageCount.incrementAndGet();
@@ -336,17 +351,17 @@ public class Spider implements Runnable, Task {
         if (destroyWhenExit) {
             close();
         }
-        dispatchListener(null, (listener, request) -> listener.onFinish(getUUID()));
+        dispatchListener(null, (listener, request) -> listener.onFinish(this));
 
         logger.info("Spider {} closed! {} pages downloaded.", getUUID(), pageCount.get());
     }
 
-    protected void onError(Request request) {
-        dispatchListener(request, SpiderListener::onError);
+    protected void onError(Request request, Throwable throwable) {
+        dispatchListener(request, (listener, request1) -> listener.onError(Spider.this, request1, throwable));
     }
 
     protected void onSuccess(Request request) {
-        dispatchListener(request, SpiderListener::onSuccess);
+        dispatchListener(request, (listener, request1) -> listener.onSuccess(Spider.this, request1));
     }
 
     interface ActionDispatcher {

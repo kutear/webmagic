@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sun Mar 14 20:45:44 CST 2021
+webmagic-samples-0.7.5-sources.jar>=
+webmagic-samples-0.7.5.pom>=
+webmagic-samples-0.7.5.jar>=
+webmagic-samples-0.7.5-javadoc.jar>=

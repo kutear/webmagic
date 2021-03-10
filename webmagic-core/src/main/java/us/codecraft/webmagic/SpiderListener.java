@@ -8,11 +8,11 @@ package us.codecraft.webmagic;
  */
 public interface SpiderListener {
 
-    void onStart(String uuid);
+    void onStart(Spider spider);
 
-    public void onSuccess(Request request);
+    void onSuccess(Spider spider, Request request);
 
-    public void onError(Request request);
+    void onError(Spider spider, Request request, Throwable throwable);
 
-    void onFinish(String uuid);
+    void onFinish(Spider spider);
 }

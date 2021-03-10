@@ -2,6 +2,7 @@ package us.codecraft.webmagic.processor;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
+import us.codecraft.webmagic.Spider;
 
 /**
  * Interface to be implemented to customize a crawler.<br>
