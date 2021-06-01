@@ -2,6 +2,7 @@ package us.codecraft.webmagic.downloader.selenium;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -136,6 +137,17 @@ class WebDriverPool {
 		} else if (driver.equals(DRIVER_FIREFOX)) {
 			mDriver = new FirefoxDriver(sCaps);
 		} else if (driver.equals(DRIVER_CHROME)) {
+			ChromeOptions options = new ChromeOptions();
+			// 谷歌文档提到需要加上这个属性来规避bug
+			options.addArguments("headless");
+			options.addArguments("disable-dev-shm-usage");
+			options.addArguments("disable-plugins");
+			// 禁用java
+			options.addArguments("disable-java");
+			// 以最高权限运行
+			options.addArguments("no-sandbox");
+			//不显示弹出窗口
+			options.setHeadless(true);
 			mDriver = new ChromeDriver(sCaps);
 		} else if (driver.equals(DRIVER_PHANTOMJS)) {
 			mDriver = new PhantomJSDriver(sCaps);

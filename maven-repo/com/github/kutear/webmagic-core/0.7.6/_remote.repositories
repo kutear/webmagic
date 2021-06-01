@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Jun 02 02:24:58 CST 2021
+webmagic-core-0.7.6.jar>=
+webmagic-core-0.7.6-javadoc.jar>=
+webmagic-core-0.7.6.pom>=
+webmagic-core-0.7.6-sources.jar>=

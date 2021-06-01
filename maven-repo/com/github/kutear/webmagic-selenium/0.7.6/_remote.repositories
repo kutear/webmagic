@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Jun 02 02:25:21 CST 2021
+webmagic-selenium-0.7.6.jar>=
+webmagic-selenium-0.7.6.pom>=
+webmagic-selenium-0.7.6-javadoc.jar>=
+webmagic-selenium-0.7.6-sources.jar>=

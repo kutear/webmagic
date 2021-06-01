@@ -1,0 +1,6 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Jun 02 02:25:23 CST 2021
+webmagic-saxon-0.7.6.pom>=
+webmagic-saxon-0.7.6-javadoc.jar>=
+webmagic-saxon-0.7.6-sources.jar>=
+webmagic-saxon-0.7.6.jar>=
