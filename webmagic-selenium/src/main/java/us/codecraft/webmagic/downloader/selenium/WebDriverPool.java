@@ -142,9 +142,11 @@ class WebDriverPool {
 			options.addArguments("--disable-plugins");
 			// 禁用java
 			options.addArguments("--disable-java");
+			options.addArguments("--disable-extensions");
 			// 以最高权限运行
 			options.addArguments("--no-sandbox");
-			options.addArguments("--window-size=1920,1080");
+			options.addArguments("--disable-dev-shm-usage");
+			options.addArguments("--window-size=1920x1080");
 			//不显示弹出窗口
 			options.setHeadless(true);
 			mDriver = new ChromeDriver(options);
